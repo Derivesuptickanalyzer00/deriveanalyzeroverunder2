@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Untitled</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Chart & Tick Analyzer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+    /* Chart section */
+    .chart-container {
+      width: 100%;
+      max-width: 90%;
+      height: 30vh;
+      margin-bottom: 20px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    /* Tick Analyzer section */
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    select, input[type="number"], button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .buttons-container {
+      display: flex;
+      justify-content: space-between;
+    }
+    .buttons-container button {
+      width: 23%;
+    }
+    .candle-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+    }
+    .candle {
+      width: 30px;
+      height: 50px;
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+    }
+    .result {
+      padding: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .green {
+      background-color: green;
+      color: white;
+    }
+    .red {
+      background-color: red;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Live Chart Section -->
+  <h1>Live Chart</h1>
+  <div class="chart-container">
+    <canvas id="dynamicChart"></canvas>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('dynamicChart').getContext('2d');
+
+    // Initialize the chart
+    const dynamicChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Entry Spot', 'Point 2', 'Point 3', 'Point 4', 'Exit Spot'],
+        datasets: [{
+          label: 'Price',
+          data: [1536, 1535.5, 1535, 1534.5, 1534],
+          borderColor: '#62a4ab',
+          backgroundColor: 'rgba(98, 164, 171, 0.2)',
+          borderWidth: 2,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: '#d3e9eb'
+            }
+          },
+          x: {
+            grid: {
+              color: '#d3e9eb'
+            }
+          }
+        }
+      }
+    });
+
+    // Simulate dynamic updates
+    setInterval(() => {
+      const newDataPoint = Math.random() * 1 + 1533.5;
+      dynamicChart.data.labels.push(`Point ${dynamicChart.data.labels.length + 1}`);
+      dynamicChart.data.datasets[0].data.push(newDataPoint);
+
+      // Remove old data to keep the chart moving
+      if (dynamicChart.data.labels.length > 6) {
+        dynamicChart.data.labels.shift();
+        dynamicChart.data.datasets[0].data.shift();
+      }
+
+      dynamicChart.update();
+    }, 2000);
+  </script>
+
+  <!-- Tick Analyzer Section -->
+  <div class="container">
+    <h1>Tick Analyzer</h1>
+
+    <div class="section">
+      <label for="market">Market</label>
+      <select id="market">
+        <option>Volatility 10</option>
+        <option>Volatility 25</option>
+        <option>Volatility 50</option>
+        <option>Volatility 75</option>
+        <option>Volatility 100</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <label for="tradeType">Trade Type</label>
+      <select id="tradeType">
+        <option>Rise/Fall</option>
+        <option>Over/Under</option>
+        <option>Higher/Lower</option>
+        <option>Touch/No Touch</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <label for="stake">Stake</label>
+      <input type="number" id="stake" placeholder="Enter stake amount">
+    </div>
+
+    <div class="section">
+      <label for="lastDigitPrediction">Last Digit Prediction</label>
+      <select id="lastDigitPrediction">
+        <option value="">Select a number</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+      </select>
+    </div>
+
+    <div class="section buttons-container">
+      <button id="btn6">6</button>
+      <button id="btn7">7</button>
+      <button id="btn8">8</button>
+      <button id="btn9">9</button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <div class="candle-container">
+      <div class="candle red">%</div>
+      <div class="candle green">%</div>
+      <div class="candle red">%</div>
+      <div class="candle green">%</div>
+      <div class="candle red">%</div>
+      <div class="candle green">%</div>
+    </div>
+
+    <button id="reset">Reset</button>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll(".buttons-container button");
+    const resultDiv = document.getElementById("result");
+    const resetButton = document.getElementById("reset");
+    const candles = document.querySelectorAll(".candle");
+    let clickCount = 0;
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        clickCount++;
+        if (clickCount >= 3 && clickCount <= 4) {
+          const randomResult = Math.random() < 0.5 ? "Don't Purchase" : "Purchase";
+          resultDiv.textContent = randomResult;
+          resultDiv.className = `result ${randomResult === "Purchase" ? "green" : "red"}`;
+        }
+      });
+    });
+
+    resetButton.addEventListener("click", () => {
+      clickCount = 0;
+      resultDiv.textContent = "";
+      candles.forEach(candle => {
+        candle.textContent = "%";
+      });
+    });
+
+    setInterval(() => {
+      candles.forEach(candle => {
+        candle.textContent = `${Math.floor(Math.random() * 100)}%`;
+      });
+    }, 1000);
+  </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
